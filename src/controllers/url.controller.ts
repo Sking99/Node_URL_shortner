@@ -5,6 +5,7 @@ import { publicProcedure } from "../routers/trpc/context";
 import { UrlService } from "../services/url.service";
 import logger from "../config/logger.config";
 import { InternalServerError } from "../utils/errors/app.error";
+import { Request, Response, NextFunction } from "express";
 
 const urlService = new UrlService(new UrlRepository(), new CacheRepository());
 
@@ -54,4 +55,22 @@ export const urlController = {
         }
     }
     )
+}
+
+export async function redirectUrl(req: Request, res: Response, next: NextFunction) {
+    const { shortUrl } = req.params;
+
+    const url = await urlService.getOriginalUrl(shortUrl);
+
+    if(!url) {
+        res.status(404).json({
+            success: false,
+            message: 'URL not found'
+        });
+        return;
+    }
+
+    await urlService.incrementClicks(shortUrl);
+
+    res.redirect(url.originalUrl);
 }
