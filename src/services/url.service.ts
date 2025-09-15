@@ -35,8 +35,9 @@ export class UrlService {
     }
 
     async getOriginalUrl(shortUrl: string) {
+        console.log("Short URL:", shortUrl);
         let originalUrl = await this.cacheRepository.getUrlMapping(shortUrl);
-
+        console.log("Original URL from cache:", originalUrl);
         if (originalUrl) {
             await this.urlRepository.incrementClicks(shortUrl);
 
@@ -47,6 +48,7 @@ export class UrlService {
         }
 
         let url = await this.urlRepository.findByShortUrl(shortUrl);
+        console.log("Original URL from DB:", url?.originalUrl);
 
         if (!url) {
             throw new NotFoundError('URL not found');

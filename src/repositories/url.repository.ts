@@ -45,7 +45,8 @@ export class UrlRepository {
     }
 
     async incrementClicks(shortUrl: string): Promise<void> {
-        await Url.findByIdAndUpdate({ shortUrl }, { $inc: { clicks: 1 } });
+        console.log("Incrementing clicks for:", shortUrl);
+        await Url.findOneAndUpdate({ shortUrl }, { $inc: { clicks: 1 } });
         return;
     }
 
